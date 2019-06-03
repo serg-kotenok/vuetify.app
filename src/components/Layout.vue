@@ -11,6 +11,11 @@
     <v-content>
       <v-container fluid>
         <v-flex xs12>
+          <!-- -->:q
+
+          y:q
+:wq
+f rg vv
 <!--          <router-view></router-view> -->
         </v-flex>
       </v-container>
