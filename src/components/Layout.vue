@@ -1,6 +1,6 @@
 <template>
   <v-app dark>
-    <v-navigation-drawer app></v-navigation-drawer>
+    <v-navigation-drawer app ></v-navigation-drawer>
 
     <v-toolbar app>
       <v-toolbar-side-icon></v-toolbar-side-icon>
@@ -11,11 +11,6 @@
     <v-content>
       <v-container fluid>
         <v-flex xs12>
-          <!-- -->:q
-
-          y:q
-:wq
-f rg vv
 <!--          <router-view></router-view> -->
         </v-flex>
       </v-container>
