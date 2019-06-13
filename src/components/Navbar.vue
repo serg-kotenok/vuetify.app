@@ -2,27 +2,30 @@
   <!-- Рут элемент -->
   <div>
     <!-- Навигационная вертикальное меню -->
-    <v-navigation-drawer app v-model="showDrawer" clipped>
+    <v-navigation-drawer app clipped v-model="showDrawer">
       <!-- Заголовок с клипартом -->
-      <!--      <v-img :aspect-ratio="16/9" src="https://cdn.vuetifyjs.com/images/parallax/material.jpg">-->
-      <v-img :aspect-ratio="2/1" src="/static/navigation-drawer-top-2.jpg">
-        <v-layout pa-2 column fill-height class="lightbox white--text">
-          <!--        <v-spacer></v-spacer>-->
+      <v-img :aspect-ratio="2/1" src="/static/navigation-drawer-top.jpg">
+<!--
+        <v-layout pa-2 column fill-height class="lightbox">
+        <v-spacer></v-spacer>
           <v-flex shrink>
-            <div class="subheading" style="font-weight: bold">Author: Sergey Kotenok</div>
-            <div class="body-1">mailto: serg.kotenok@gmail.com</div>
+            <div class="subheading blue--text font-weight-bold shades--text">Author: Sergey Kotenok</div>
+            <div class="body-1 green--text font-weight-bold">mailto: serg.kotenok@gmail.com</div>
           </v-flex>
         </v-layout>
+-->
       </v-img>
       <!-- Опции меню -->
       <v-list subheader>
         <!-- Разделитель начальный -->
         <v-divider></v-divider>
         <!-- Пункты меню -->
-        <v-list-tile v-if="link.text !== undefined"
-                     v-for="(link, index) in links"
-                     v-bind:key="index"
-                     v-bind:to="link.href">
+        <v-list-tile
+          v-if="link.text !== undefined"
+          v-for="(link, index) in links"
+          v-bind:key="index"
+          v-bind:to="link.href"
+        >
 
           <v-list-tile-action>
             <v-icon>{{ link.icon }}</v-icon>
@@ -40,7 +43,7 @@
       </v-list>
     </v-navigation-drawer>
     <!-- Горизонтальное меню (тулбар) -->
-    <v-toolbar app>
+    <v-toolbar app dense>
       <!-- Гамбургер -->
       <v-toolbar-side-icon v-on:click="showDrawer = !showDrawer"></v-toolbar-side-icon>
       <!-- Заголовок -->
@@ -48,7 +51,12 @@
       <v-spacer></v-spacer>
       <!-- Кнопки -->
       <v-toolbar-items class="hidden-sm-and-down">
-        <v-btn flat v-for="(link, index) in links" v-bind:key="index" v-bind:to="link.href" v-if="link.text !== undefined">
+        <v-btn flat
+               v-for="(link, index) in links"
+               v-bind:key="index"
+               v-bind:to="link.href"
+               v-if="link.text !== undefined"
+        >
           <v-icon left>{{ link.icon }}</v-icon>
           {{ link.text }}
         </v-btn>
