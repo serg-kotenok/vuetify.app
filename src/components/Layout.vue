@@ -10,8 +10,8 @@
 
     <v-content>
       <v-container fluid>
-        <v-flex xs12>
-<!--          <router-view></router-view> -->
+        <v-flex xs1>
+          <router-view></router-view>
         </v-flex>
       </v-container>
     </v-content>
