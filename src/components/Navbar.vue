@@ -4,16 +4,13 @@
     <!-- Навигационная вертикальное меню -->
     <v-navigation-drawer app clipped v-model="showDrawer">
       <!-- Заголовок с клипартом -->
-      <v-img :aspect-ratio="2/1" src="/static/navigation-drawer-top.jpg">
-      </v-img>
+      <v-img :aspect-ratio="2/1" src="/static/navigation-drawer-top.jpg"></v-img>
       <!-- Опции меню -->
       <v-list subheader>
         <!-- Разделитель начальный -->
         <v-divider></v-divider>
         <!-- Пункты меню -->
-        <div v-for="(link, index) in links"
-             v-bind:key="index"
-        >
+        <div v-for="(link, index) in links" v-bind:key="index">
           <!-- Разделитель -->
           <v-divider v-if="link.text === undefined"></v-divider>
           <!-- Пункт меню обычный -->
@@ -34,7 +31,7 @@
             </template>
             <v-list-tile v-for="(sub_link, index) in link.sub_links" v-bind:key="index" v-bind:to="sub_link.href">
               <v-list-tile-action>
-                <v-icon>{{ sub_link.icon }}</v-icon>
+                <v-icon right>{{ sub_link.icon }}</v-icon>
               </v-list-tile-action>
               <v-list-tile-content>
                 <v-list-tile-title v-text="sub_link.text"></v-list-tile-title>
@@ -59,8 +56,7 @@
                v-for="(link, index) in links"
                v-bind:key="index"
                v-bind:to="link.href"
-               v-if="link.text !== undefined"
-        >
+               v-if="link.text !== undefined && link.href !== undefined">
           <v-icon left>{{ link.icon }}</v-icon>
           {{ link.text }}
         </v-btn>
