@@ -4,14 +4,14 @@
       <v-flex xs12 sm8 md6>
         <v-card class="elevation-15">
           <v-toolbar dark color="primary">
-            <v-toolbar-title>Login form</v-toolbar-title>
+            <v-toolbar-title>Login Form</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
-            <v-form ref="form" v-model="valid" lazy-validation>
+            <v-form ref="form" v-model="valid">
               <v-text-field
                 prepend-icon="person"
                 name="email"
-                label="Email"
+                label="E-mail"
                 type="email"
                 :v-model="email"
                 :rules="emailRules"
@@ -25,14 +25,13 @@
                 type="password"
                 :v-model="password"
                 :rules="passwordRules"
-                :counter="6"
-                requered
+                required
               ></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" v-on:click="onSubmit" :disabled="valid == false">Login</v-btn>
+            <v-btn color="primary" v-on:click="onSubmit" :disabled="!valid">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -54,7 +53,7 @@ export default {
       ],
       passwordRules: [
         v => !!v || 'Password is required',
-        v => v.length >= 6 || 'Name must be equal or more than 6 characters'
+        v => ((v !== undefined) && (v.length >= 6)) || 'Name must be equal or more than 6 characters'
       ]
     }
   },
@@ -65,7 +64,7 @@ export default {
           email: this.email,
           password: this.password
         }
-        console.log('Login')
+        console.log(user)
       }
     }
   }
