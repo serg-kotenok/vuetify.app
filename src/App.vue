@@ -1,19 +1,21 @@
 <template>
   <v-app dark>
-    <navbar></navbar>
+    <app-header/>
     <v-content>
       <router-view></router-view>
     </v-content>
-    <v-footer app></v-footer>
+    <app-footer/>
   </v-app>
 </template>
 
 <script>
-import Navbar from '@/components/Navbar.vue'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
 
 export default {
   components: {
-    Navbar
+    AppHeader,
+    AppFooter
   }
 }
 </script>
