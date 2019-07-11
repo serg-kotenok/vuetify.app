@@ -1,17 +1,27 @@
 <template>
   <div>
-    <v-layout
-      v-for="(item, index) in items"
+    <v-container
+      v-for="(date_block, index) in items"
       :key="index"
-      row
+      pa-0
+      my-3
     >
-      <v-flex xs12>
-        <event-item
-          :event="item"
+      <v-card :elevation="10">
+        <v-card-title>
+          <h3 class="headline text--primary">{{ date_block.items_date }}</h3>
+        </v-card-title>
+        <v-layout
+          v-for="(item, index) in date_block.items"
+          :key="index"
+          row
         >
-        </event-item>
-      </v-flex>
-    </v-layout>
+          <v-flex xs12>
+            <event-item :event="item"/>
+          </v-flex>
+        </v-layout>
+      </v-card>
+      <v-spacer></v-spacer>
+    </v-container>
   </div>
 </template>
 
