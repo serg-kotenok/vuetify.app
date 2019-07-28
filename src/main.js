@@ -4,10 +4,11 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
+import axios from 'axios'
 import Vuetify from 'vuetify'
+import Ripple from 'vuetify/lib/directives'
 import 'vuetify/dist/vuetify.min.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
-import { Ripple } from 'vuetify/lib/directives'
 
 Vue.config.productionTip = false
 Vue.use(Vuetify, {
@@ -21,6 +22,7 @@ new Vue({
   el: '#app',
   router,
   store,
+  axios,
   components: { App },
   template: '<App/>'
 })

@@ -7,16 +7,21 @@
       <v-card
         :elevation="10"
       >
-        <v-card-title primary-title>
-          <h3 class="headline text--primary">{{ date_block.items_date }}</h3>
-        </v-card-title>
-<!--       <v-card-text>-->
-          <event-item
-            v-for="(item, index) in date_block.items"
-            :key="index"
-            :event="item"
-          />
-<!--        </v-card-text>-->
+
+        <v-toolbar dark color="primary">
+          <v-toolbar-title>
+            <h3 class="headline text--primary">
+              {{ date_block.items_date }}
+            </h3>
+          </v-toolbar-title>
+        </v-toolbar>
+
+        <event-item
+          v-for="(item, index) in date_block.items"
+          :key="index"
+          :event="item"
+        />
+
       </v-card>
       <v-spacer></v-spacer>
     </v-container>

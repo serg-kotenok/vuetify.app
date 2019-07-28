@@ -112,9 +112,9 @@ export default {
   computed: {
     currentTitle () {
       switch (this.step) {
-        case 1: return 'Sign-up'
-        case 2: return 'Create a password'
-        default: return 'Account created'
+        case 1: return 'Measure Blood'
+        case 2: return 'Food'
+        default: return 'Treatment'
       }
     }
   },

@@ -60,12 +60,17 @@
           <v-icon left>{{ link.icon }}</v-icon>
           {{ link.text }}
         </v-btn>
+        <v-btn v-if="isAuthenticated">
+          EXIT
+          <v-icon right="">exit_to_app</v-icon>
+        </v-btn>
       </v-toolbar-items>
     </v-toolbar>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'Navbar',
   data: () => {
@@ -85,6 +90,11 @@ export default {
         { text: 'Add Event', icon: 'add', href: '/add' }
       ]
     }
+  },
+  computed: {
+    ...mapGetters([
+      'isAuthenticated'
+    ])
   }
 }
 </script>
