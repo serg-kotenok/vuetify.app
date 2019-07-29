@@ -27,13 +27,15 @@ export const actions = {
         url: authInfo.url,
         data: user,
         method: authInfo.method
-      }).then(resp => {
-        const token = resp.data.token
+      }).then(response => {
+        const token = response
+        console.log(response)
+        console.log(JwtDecode(token.data))
         localStorage.setItem('user-token', token) // store the token in localstorage
         commit(AUTH_SUCCESS)
         // you have your token, now log in your user :)
         //        dispatch(USER_REQUEST)
-        resolve(resp)
+        resolve(response)
       }).catch(err => {
         commit(AUTH_ERROR, err)
         localStorage.removeItem('user-token') // if the request fails, remove any possible user token if possible
