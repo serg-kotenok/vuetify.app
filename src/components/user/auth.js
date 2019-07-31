@@ -1,51 +1,74 @@
 import JwtDecode from 'jwt-decode'
 import axios from 'axios'
 
+export const REG_REQUEST = 'REG_REQUEST'
+
 export const AUTH_REQUEST = 'AUTH_REQUEST'
-export const AUTH_LOGOUT = 'AUTH_LOGOUT'
+export const LOGOUT = 'LOGOUT'
 
-export const AUTH_SUCCESS = 'AUTH_SUCCESS'
-export const AUTH_ERROR = 'AUTH_ERROR'
+export const USER_SUCCESS = 'USER_SUCCESS'
+export const USER_ERROR = 'AUTH_ERROR'
 
-export const USER_REQUEST = 'USER_REQUEST'
+export const STATUS_NO_USER = 'anon'
+export const STATUS_USER = 'auth'
+export const STATUS_LOADING = 'loading'
+export const STATUS_ERROR = 'error'
 
-export const AUTH_STATUS_NO_USER = ''
-export const AUTH_STATUS_USER = 'user'
-export const AUTH_STATUS_LOADING = 'loading'
-export const AUTH_STATUS_ERROR = 'error'
-
-const authInfo = {
-  url: 'http://vuetify.dapp/src/@/ajax/auth.php',
+const API = {
+  url: 'https://127.0.0.1:8000/',
   method: 'POST'
 }
 
 export const actions = {
-  [ AUTH_REQUEST ]: ({ commit, dispatch }, user) => {
-    return new Promise((resolve, reject) => { // The Promise used for router redirect in login
-      commit(AUTH_REQUEST)
+  [ REG_REQUEST ]: ({ commit, dispatch }, user) => {
+    return new Promise(( resolve, reject ) => {
+      commit(REG_REQUEST)
       axios({
-        url: authInfo.url,
+        url: API.url + 'user/reg',
         data: user,
-        method: authInfo.method
-      }).then(response => {
+        method: API.method
+      }).then(responae => {
         const token = response
         console.log(response)
         console.log(JwtDecode(token.data))
         localStorage.setItem('user-token', token) // store the token in localstorage
-        commit(AUTH_SUCCESS)
+        commit(USER_SUCCESS)
         // you have your token, now log in your user :)
         //        dispatch(USER_REQUEST)
         resolve(response)
       }).catch(err => {
-        commit(AUTH_ERROR, err)
+        commit(USER_ERROR, err)
         localStorage.removeItem('user-token') // if the request fails, remove any possible user token if possible
         reject(err)
       })
     })
   },
-  [ AUTH_LOGOUT ]: ({commit, dispatch}) => {
+  [ AUTH_REQUEST ]: ({ commit, dispatch }, user) => {
+    return new Promise((resolve, reject) => { // The Promise used for router redirect in login
+      commit(AUTH_REQUEST)
+      axios({
+        url: API.url + 'user/auth',
+        data: user,
+        method: API.method
+      }).then(response => {
+        const token = response
+        console.log(response)
+        console.log(JwtDecode(token.data))
+        localStorage.setItem('user-token', token) // store the token in localstorage
+        commit(USER_SUCCESS)
+        // you have your token, now log in your user :)
+        //        dispatch(USER_REQUEST)
+        resolve(response)
+      }).catch(err => {
+        commit(USER_ERROR, err)
+        localStorage.removeItem('user-token') // if the request fails, remove any possible user token if possible
+        reject(err)
+      })
+    })
+  },
+  [ LOGOUT ]: ({commit, dispatch}) => {
     return new Promise((resolve, reject) => {
-      commit(AUTH_LOGOUT)
+      commit(LOGOUT)
       localStorage.removeItem('user-token') // clear your user's token from localstorage
       resolve()
     })
@@ -54,18 +77,21 @@ export const actions = {
 
 // basic mutations, showing loading, success, error to reflect the api call status and the token when loaded
 export const mutations = {
+  [ REG_REQUEST ]: (state) => {
+    state.status = STATUS_LOADING
+  },
   [ AUTH_REQUEST ]: (state) => {
-    state.status = 'loading'
+    state.status = STATUS_LOADING
   },
-  [ AUTH_SUCCESS ]: (state, token) => {
-    state.status = 'success'
-    state.token = token
+  [ USER_SUCCESS ]: (state, token) => {
+    state.status = STATUS_USER
+    localStorage.setItem('user-token', token)
   },
-  [ AUTH_ERROR ]: (state) => {
-    state.status = 'error'
+  [ USER_ERROR ]: (state) => {
+    state.status = STATUS_ERROR
   },
-  [ AUTH_LOGOUT ]: (state) => {
-    state.status = 'logout'
+  [ LOGOUT ]: (state) => {
+    state.status = STATUS_NO_USER
   }
 }
 

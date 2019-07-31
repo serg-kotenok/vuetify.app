@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import * as auth from './auth'
 export default {
   name: 'Register',
   data: () => {
@@ -80,6 +81,13 @@ export default {
           password: this.password
         }
         console.log(user)
+        this.$store.dispatch(auth.AUTH_REQUEST, user).then(() => {
+          this.$store.dispatch(AUTH_REQUEST, { email, password }).then(() => {
+            this.$router.push('/')
+          })
+          // console.log(user)
+          const g = {}
+        })
       }
     }
   }
