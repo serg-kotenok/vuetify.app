@@ -17,14 +17,19 @@ class User
     private $id;
 
     /**
-     * ORM\Column(name="login", type="string", length=127)
+     * @ORM\Column(name="login", type="string", length=127)
      */
     private $login;
 
     /**
-     * ORM\Column(name="password", type="string", length=127)
+     * @ORM\Column(name="password", type="string", length=127)
      */
     private $password;
+
+    /**
+     * @ORM\Column(name="settings", type="text")
+     */
+    private $settings;
 
     public function getId(): ?int
     {
