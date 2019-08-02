@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { AUTH_REQUEST } from './auth'
+import * as auth from './auth'
 import { mapGetters } from 'vuex'
 export default {
   name: 'Login',
@@ -92,7 +92,7 @@ export default {
         }
         */
         const { email, password } = this
-        this.$store.dispatch(AUTH_REQUEST, { email, password }).then(() => {
+        this.$store.dispatch(auth.AUTH_REQUEST, { email, password }).then(() => {
         //          this.$router.push('/')
         })
         // console.log(user)

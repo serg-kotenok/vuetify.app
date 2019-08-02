@@ -13,7 +13,7 @@
                 name="email"
                 label="E-mail"
                 type="email"
-                :v-model="email"
+                v-model="email"
                 :rules="emailRules"
                 required
               ></v-text-field>
@@ -23,7 +23,7 @@
                 name="password"
                 label="Password"
                 type="password"
-                :v-model="password"
+                v-model="password"
                 :rules="passwordRules"
                 required
               ></v-text-field>
@@ -33,12 +33,13 @@
                 name="confirm-password"
                 label="Confirm Password"
                 type="password"
-                :v-model="confirmPassword"
+                v-model="confirmPassword"
                 :rules="confirmPasswordRules"
                 required
               ></v-text-field>
             </v-form>
           </v-card-text>
+          {{ confirmPassword }} {{ password }}
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="primary" v-on:click="onSubmit" :disabled="!valid">Create Account</v-btn>
@@ -68,8 +69,9 @@ export default {
         v => ((v !== undefined) && (v.length >= 6)) || 'Name must be equal or more than 6 characters'
       ],
       confirmPasswordRules: [
-        v => !!v || 'Password is required',
-        v => v === this.password || 'Password should match'
+        v => !!v || 'Password is required'
+        // ,
+        // v => (v !== this.password) || 'Password should match'
       ]
     }
   },
@@ -81,12 +83,14 @@ export default {
           password: this.password
         }
         console.log(user)
-        this.$store.dispatch(auth.AUTH_REQUEST, user).then(() => {
-          this.$store.dispatch(AUTH_REQUEST, { email, password }).then(() => {
+        this.$store.dispatch(auth.REG_REQUEST, user).then((response) => {
+          if (response.status === 'auth') {
             this.$router.push('/')
-          })
-          // console.log(user)
-          const g = {}
+          } else {
+            // show error
+          }
+        }).catch(() => {
+          alert('Registration error')
         })
       }
     }

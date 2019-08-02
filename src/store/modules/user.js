@@ -27,7 +27,7 @@ const getters = {
     return state.status
   },
   authLoading: state => state.status === 'loading',
-  authError: state => state.status === auth.AUTH_STATUS_ERROR
+  authError: state => state.status === auth.STATUS_ERROR
 }
 
 export default {

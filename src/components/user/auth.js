@@ -21,13 +21,13 @@ const API = {
 
 export const actions = {
   [ REG_REQUEST ]: ({ commit, dispatch }, user) => {
-    return new Promise(( resolve, reject ) => {
+    return new Promise((resolve, reject) => {
       commit(REG_REQUEST)
       axios({
         url: API.url + 'user/reg',
         data: user,
         method: API.method
-      }).then(responae => {
+      }).then(response => {
         const token = response
         console.log(response)
         console.log(JwtDecode(token.data))

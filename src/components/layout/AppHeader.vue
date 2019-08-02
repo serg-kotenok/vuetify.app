@@ -58,17 +58,20 @@
       <v-spacer></v-spacer>
       <!-- Кнопки -->
       <v-toolbar-items class="hidden-sm-and-down">
-        <v-btn
+        <template
           v-for="(link, index) in links"
           v-if="link.text !== undefined && link.href !== undefined"
-          v-show="!link.fab"
-          flat
-          :key="index"
-          :to="link.href"
         >
-          <v-icon left>{{ link.icon }}</v-icon>
-          {{ link.text }}
-        </v-btn>
+          <v-btn
+            v-show="!link.fab"
+            flat
+            :key="index"
+            :to="link.href"
+          >
+              <v-icon left>{{ link.icon }}</v-icon>
+              {{ link.text }}
+          </v-btn>
+        </template>
         <template v-else>
           <v-btn
             flat
@@ -84,7 +87,7 @@
     </v-toolbar>
     <v-btn
       v-for="(link, index) in links"
-      v-if="link.fab"
+      v-if="isHomePage && link.fab"
       fab
       large
       fixed
@@ -121,7 +124,11 @@ export default {
       ]
     }
   },
-  computed: {
+  computed:
+  {
+    isHomePage () {
+      return this.$route.path === '/'
+    },
     ...mapGetters([
       'isAuthenticated'
     ])

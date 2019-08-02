@@ -17,12 +17,12 @@ class User
     private $id;
 
     /**
-     * @ORM\Column(name="login", type="string", length=127)
+     * @ORM\Column(name="login", type="string", length=50)
      */
     private $login;
 
     /**
-     * @ORM\Column(name="password", type="string", length=127)
+     * @ORM\Column(name="password", type="string", length=32)
      */
     private $password;
 
@@ -34,6 +34,42 @@ class User
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function setLogin(string $login): self
+    {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getSettings(): ?string
+    {
+        return $this->settings;
+    }
+
+    public function setSettings(string $settings): self
+    {
+        $this->settings = $settings;
+
+        return $this;
     }
 
 }
