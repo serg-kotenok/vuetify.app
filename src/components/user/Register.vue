@@ -6,6 +6,20 @@
           <v-toolbar dark color="primary">
             <v-toolbar-title>Registration Form</v-toolbar-title>
           </v-toolbar>
+          <v-progress-linear
+            class="ma-0"
+            :indeterminate="true"
+            v-if="authLoading"
+          />
+          <v-card-text
+            class="error"
+            v-if="authError"
+          >
+            <v-icon>info</v-icon>
+            <span class="shift">
+              User with such email already exists or service down
+            </span>
+          </v-card-text>
           <v-card-text>
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
@@ -39,10 +53,9 @@
               ></v-text-field>
             </v-form>
           </v-card-text>
-          {{ confirmPassword }} {{ password }}
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" v-on:click="onSubmit" :disabled="!valid">Create Account</v-btn>
+            <v-btn color="primary" @click="onSubmit" :disabled="!valid">Create Account</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -52,6 +65,7 @@
 
 <script>
 import * as auth from './auth'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Register',
   data: () => {
@@ -71,9 +85,16 @@ export default {
       confirmPasswordRules: [
         v => !!v || 'Password is required'
         // ,
-        // v => (v !== this.password) || 'Password should match'
+        // function (v) { return (v !== this.password) || 'Password should match' }
       ]
     }
+  },
+  computed: {
+    ...mapGetters([
+      'authStatus',
+      'authLoading',
+      'authError'
+    ])
   },
   methods: {
     onSubmit () {
@@ -82,15 +103,14 @@ export default {
           email: this.email,
           password: this.password
         }
-        console.log(user)
         this.$store.dispatch(auth.REG_REQUEST, user).then((response) => {
-          if (response.status === 'auth') {
+          const data = response.data
+          if (data.status === 'ok') {
             this.$router.push('/')
-          } else {
-            // show error
           }
-        }).catch(() => {
-          alert('Registration error')
+        }).catch((error) => {
+          console.log(error)
+          alert('Registration error! See details in browser console')
         })
       }
     }
@@ -99,5 +119,7 @@ export default {
 </script>
 
 <style scoped>
-
+  .shift {
+    vertical-align: 3px;
+  }
 </style>

@@ -9,10 +9,11 @@ import {
 */
 import * as auth from '@/components/user/auth'
 
+const user = auth.User.from(localStorage.getItem('user-token'))
+
 const state = {
-  user: auth.User.from(localStorage.getItem('user-token')),
-  token: '',
-  status: 'logout'
+  user: user,
+  status: user ? auth.STATUS_USER : auth.STATUS_NO_USER
 }
 
 const getters = {
@@ -20,13 +21,13 @@ const getters = {
     return state.user
   },
   isAuthenticated: (state) => {
-    return (state.status !== 'logout') && (state.status !== 'error')
+    return (state.user !== null)
     //    return !!state.token
   },
   authStatus: (state) => {
     return state.status
   },
-  authLoading: state => state.status === 'loading',
+  authLoading: state => state.status === auth.STATUS_LOADING,
   authError: state => state.status === auth.STATUS_ERROR
 }
 

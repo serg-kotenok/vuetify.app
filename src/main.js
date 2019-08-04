@@ -24,5 +24,8 @@ new Vue({
   store,
   axios,
   components: { App },
-  template: '<App/>'
+  template: '<App/>',
+  created () {
+
+  }
 })

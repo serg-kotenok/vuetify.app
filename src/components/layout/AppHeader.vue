@@ -58,30 +58,28 @@
       <v-spacer></v-spacer>
       <!-- Кнопки -->
       <v-toolbar-items class="hidden-sm-and-down">
-        <template
+        <v-btn
           v-for="(link, index) in links"
           v-if="link.text !== undefined && link.href !== undefined"
+          v-show="!link.fab"
+          flat
+          :key="index"
+          :to="link.href"
         >
-          <v-btn
-            v-show="!link.fab"
-            flat
-            :key="index"
-            :to="link.href"
-          >
-              <v-icon left>{{ link.icon }}</v-icon>
-              {{ link.text }}
-          </v-btn>
-        </template>
+          <v-icon left>{{ link.icon }}</v-icon>
+            {{ link.text }}
+        </v-btn>
         <template v-else>
           <v-btn
             flat
-            v-for="(sub_link, index) in link.sub_links"
-            :key="index"
+            v-for="(sub_link, sub_index) in link.sub_links"
+            v-if="isAuthenticated == sub_link.isAuth"
+            :key="100 + sub_index"
             :to="sub_link.href"
-            v-show="isAuthenticated == sub_link.isAuth">
+          >
             <v-icon left>{{ sub_link.icon }}</v-icon>
-            {{ sub_link.text }}
-          </v-btn>
+              {{ sub_link.text }}
+            </v-btn>
         </template>
       </v-toolbar-items>
     </v-toolbar>
@@ -104,6 +102,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { LOGOUT } from '@/components/user/auth'
 export default {
   name: 'Navbar',
   data: () => {
@@ -117,21 +116,27 @@ export default {
             { text: 'Register', icon: 'face', href: '/register', isAuth: false },
             { text: 'Login', icon: 'account_box', href: '/login', isAuth: false },
             { text: 'Settings', icon: 'settings', href: '/settings', isAuth: true },
-            { text: 'Exit', icon: 'exit_to_app', href: '/logoff', isAuth: true }
+            { text: 'Exit', icon: 'exit_to_app', href: '/logout', isAuth: true }
           ]
         },
         { text: 'Add Event', icon: 'add', href: '/add', fab: true }
       ]
     }
   },
-  computed:
-  {
+  computed: {
     isHomePage () {
       return this.$route.path === '/'
     },
     ...mapGetters([
       'isAuthenticated'
     ])
+  },
+  methods: {
+    logout () {
+      this.$store.dispatch(LOGOUT).then(() => {
+        this.$route.push('/')
+      })
+    }
   }
 }
 </script>

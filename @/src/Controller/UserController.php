@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Doctrine\ORM\ORMException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,17 +22,21 @@ class UserController extends AbstractController
      */
     public function register(Request $request)
     {
+        $status = 'ok';
+        $token = '';
+
         // you can fetch the EntityManager via $this->getDoctrine()
-        // or you can add an argument to your action: index(EntityManagerInterface $entityManager)
+        // or you can add an argument to your action' => 'index(EntityManagerInterface $entityManager)
         $entityManager = $this->getDoctrine()->getManager();
         $payload = json_decode($request->getContent(), true);
 
-        if ($payload['login'] && $payload['password']) {
+        if ($payload['email'] && $payload['password']) {
             $repository = $this->getDoctrine()->getRepository(User::class);
 
-            if ($repository->findOneBy([ 'login' => $payload['login'] ]) === null) {
+            if ($repository->findOneBy([ 'login' => $payload['email'] ]) === null) {
                 $user = new User();
-                $user->setLogin($payload['login']);
+
+                $user->setLogin($payload['email']);
                 $user->setPassword(md5($payload['password']));
                 $user->setSettings('');
 
@@ -42,51 +47,53 @@ class UserController extends AbstractController
                 try {
                     $entityManager->flush();
 
-                    $user = new \stdClass();
-                    $user->login = $payload['login'];
-                    $user->settings = '';
+                    $usr = new \stdClass();
+                    $usr->login = $payload['email'];
+                    $usr->settings = '';
 
-                    $response = new JsonResponse([
-                        'status' => 'ok',
-                        'user' => $user,
-                        'token' => JWT::encode($user, self::APP_SECRET)
-                    ], JsonResponse::HTTP_CREATED);
-
-                } catch (\Exception $e) {
-                    $response = new JsonResponse([
-                        'status' => 'exception',
-                        'reason' => $e->toString()
-                    ], JsonResponse::HTTP_CREATED);
+                    $token = JWT::encode($usr, self::APP_SECRET);
+                } catch (Doctrine\ORM\ORMException $e)
+                {
+                    $status = 'exception: ' . $e->getMessage();
                 }
             } else {
-                $response = new JsonResponse([
-                    'status' => 'exists',
-                ],JsonResponse::HTTP_CREATED);
-
+                $status = 'exists';
             }
         } else {
-            throw new NotFoundHttpException('No JSON input!');
+            $status = 'no json';
         }
+
+        $response = new JsonResponse([
+            'status' => $status,
+            'token' => $token,
+        ], JsonResponse::HTTP_OK, [
+            'Access-Control-Allow-Origin' => '*',
+            'Content-Type' => 'application/json; charset=UTF-8',
+            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Max-Age' => '3600',
+            'Access-Control-Allow-Headers' => 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With',
+        ]);
 
         return $response;
     }
 
+    /**
+     * @Route("/user/auth", name="user_auth", methods={ "POST" })
+     */
     public function authenticate(Request $request)
     {
-        $status = '';
+        $status = 'ok';
         $token = '';
 
         $payload = json_decode($request->getContent(), true);
 
-        if ($payload['login'] && $payload['password']) {
+        if ($payload['email'] && $payload['password']) {
             $repository = $this->getDoctrine()->getRepository(User::class);
 
-            if (($user = $repository->findOneBy([ 'login' => $payload['login'] ])) === null) {
+            if (($user = $repository->findOneBy([ 'login' => $payload['email'] ])) === null) {
                 $status = 'wrong login';
             } else {
                 if (md5($payload['password']) === $user->getPassword()) {
-                    $status = 'ok';
-
                     $usr = new \stdClass();
                     $usr->login = $user->getLogin();
                     $usr->settings = $user->getSettings();
@@ -97,13 +104,19 @@ class UserController extends AbstractController
                 }
             }
         } else {
-            $status = 'no json in input';
+            $status = 'no json';
         }
 
         $response = new JsonResponse([
             'status' => $status,
             'token' => $token,
-        ], JsonResponse::HTTP_CREATED);
+        ], JsonResponse::HTTP_CREATED, [
+            'Access-Control-Allow-Origin' => '*',
+            'Content-Type' => 'application/json; charset=UTF-8',
+            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Max-Age' => '3600',
+            'Access-Control-Allow-Headers' => 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With',
+        ]);
 
         return $response;
 

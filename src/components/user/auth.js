@@ -22,46 +22,50 @@ const API = {
 export const actions = {
   [ REG_REQUEST ]: ({ commit, dispatch }, user) => {
     return new Promise((resolve, reject) => {
-      commit(REG_REQUEST)
-      axios({
+      let request = {
         url: API.url + 'user/reg',
         data: user,
         method: API.method
-      }).then(response => {
-        const token = response
-        console.log(response)
-        console.log(JwtDecode(token.data))
-        localStorage.setItem('user-token', token) // store the token in localstorage
-        commit(USER_SUCCESS)
-        // you have your token, now log in your user :)
-        //        dispatch(USER_REQUEST)
-        resolve(response)
+      }
+
+      commit(REG_REQUEST)
+      axios(request).then(response => {
+        const data = response.data
+        if (data.status === 'ok' && data.token !== '') {
+          if (JwtDecode(data.token)) {
+            commit(USER_SUCCESS, data.token)
+            resolve(response)
+          }
+        }
+        commit(USER_ERROR)
+        reject(response)
       }).catch(err => {
-        commit(USER_ERROR, err)
-        localStorage.removeItem('user-token') // if the request fails, remove any possible user token if possible
+        commit(USER_ERROR)
         reject(err)
       })
     })
   },
   [ AUTH_REQUEST ]: ({ commit, dispatch }, user) => {
     return new Promise((resolve, reject) => { // The Promise used for router redirect in login
-      commit(AUTH_REQUEST)
-      axios({
+      const request = {
         url: API.url + 'user/auth',
         data: user,
         method: API.method
-      }).then(response => {
-        const token = response
-        console.log(response)
-        console.log(JwtDecode(token.data))
-        localStorage.setItem('user-token', token) // store the token in localstorage
-        commit(USER_SUCCESS)
-        // you have your token, now log in your user :)
-        //        dispatch(USER_REQUEST)
-        resolve(response)
+      }
+
+      commit(AUTH_REQUEST)
+      axios(request).then(response => {
+        const data = response.data
+        if (data.status === 'ok' && data.token !== '') {
+          if (JwtDecode(data.token)) {
+            commit(USER_SUCCESS, data.token)
+            resolve(response)
+          }
+        }
+        commit(USER_ERROR, data.status)
+        reject(response)
       }).catch(err => {
-        commit(USER_ERROR, err)
-        localStorage.removeItem('user-token') // if the request fails, remove any possible user token if possible
+        commit(USER_ERROR, 'API server malfunction')
         reject(err)
       })
     })
@@ -69,7 +73,6 @@ export const actions = {
   [ LOGOUT ]: ({commit, dispatch}) => {
     return new Promise((resolve, reject) => {
       commit(LOGOUT)
-      localStorage.removeItem('user-token') // clear your user's token from localstorage
       resolve()
     })
   }
@@ -79,39 +82,47 @@ export const actions = {
 export const mutations = {
   [ REG_REQUEST ]: (state) => {
     state.status = STATUS_LOADING
+    delete state.reason
   },
   [ AUTH_REQUEST ]: (state) => {
     state.status = STATUS_LOADING
+    delete state.reason
   },
   [ USER_SUCCESS ]: (state, token) => {
-    state.status = STATUS_USER
     localStorage.setItem('user-token', token)
+    axios.defaults.headers.common['Authorization'] = 'Barear ' + token
+    state.user = User.from(token)
+    state.status = STATUS_USER
+    delete state.reason
   },
-  [ USER_ERROR ]: (state) => {
+  [ USER_ERROR ]: (state, errorMsg) => {
+    localStorage.removeItem('user-token')
+    delete axios.defaults.headers.common['Authorization']
     state.status = STATUS_ERROR
+    state.reason = errorMsg
   },
   [ LOGOUT ]: (state) => {
+    localStorage.removeItem('user-token')
+    delete axios.defaults.headers.common['Authorization']
+    state.user = null
     state.status = STATUS_NO_USER
   }
 }
 
 export class User {
-  constructor ({ userId, admin, email }) {
-    this.id = userId // eslint-disable-line camelcase
-    this.admin = admin
-    this.email = email
+  constructor ({ login, settings }) {
+    this.login = login
+    this.settings = settings
   }
 
   static from (token) {
     try {
       let obj = JwtDecode(token)
-      return new User(obj)
+      if (obj != null) {
+        return new User(obj)
+      }
     } catch (_) {
-      return null
     }
-  }
-
-  isAdmin () {
-    return this.admin
+    return null
   }
 }

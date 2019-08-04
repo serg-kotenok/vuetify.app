@@ -7,8 +7,8 @@
             <v-toolbar-title>Login Form</v-toolbar-title>
           </v-toolbar>
           <v-progress-linear
-            style="margin: 0"
-            :indeterminate="true"
+            class="ma-0"
+            indeterminate
             v-if="authLoading"
           />
           <v-card-text
@@ -93,9 +93,8 @@ export default {
         */
         const { email, password } = this
         this.$store.dispatch(auth.AUTH_REQUEST, { email, password }).then(() => {
-        //          this.$router.push('/')
+          this.$router.push('/')
         })
-        // console.log(user)
       }
     }
   }
