@@ -62,8 +62,8 @@ export const actions = {
             resolve(response)
           }
         }
-        commit(USER_ERROR, data.status)
-        reject(response)
+        // commit(USER_ERROR, data.status)
+        // reject(response)
       }).catch(err => {
         commit(USER_ERROR, 'API server malfunction')
         reject(err)
@@ -90,14 +90,14 @@ export const mutations = {
   },
   [ USER_SUCCESS ]: (state, token) => {
     localStorage.setItem('user-token', token)
-    axios.defaults.headers.common['Authorization'] = 'Barear ' + token
+    //    axios.defaults.headers.common['Authorization'] = 'Barear ' + token
     state.user = User.from(token)
     state.status = STATUS_USER
     delete state.reason
   },
   [ USER_ERROR ]: (state, errorMsg) => {
     localStorage.removeItem('user-token')
-    delete axios.defaults.headers.common['Authorization']
+    // delete axios.defaults.headers.common['Authorization']
     state.status = STATUS_ERROR
     state.reason = errorMsg
   },

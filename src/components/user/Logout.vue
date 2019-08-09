@@ -1,16 +1,11 @@
-<template>
-    <div></div>
-</template>
-
 <script>
-import { LOGOUT } from './auth'
+import * as auth from './auth'
 export default {
   name: 'Logout',
   created () {
-    //    delete localStorage.token
-    console.log('logout')
-    this.$store.dispatch(LOGOUT)
-    this.$router.push('/')
+    this.$store.dispatch(auth.LOGOUT).then(() => {
+      this.$router.push('/')
+    })
   }
 }
 </script>

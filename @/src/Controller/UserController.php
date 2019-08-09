@@ -121,4 +121,11 @@ class UserController extends AbstractController
         return $response;
 
     }
+
+    /**
+     * @Route("/user/is_auth", name="is_user_auth", methods={ "POST" })
+     */
+    public function is_user_auth() {
+
+    }
 }

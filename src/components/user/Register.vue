@@ -21,14 +21,14 @@
             </span>
           </v-card-text>
           <v-card-text>
-            <v-form ref="form" v-model="valid" lazy-validation>
+            <v-form ref="form" v-model="valid">
               <v-text-field
                 prepend-icon="person"
                 name="email"
                 label="E-mail"
                 type="email"
                 v-model="email"
-                :rules="emailRules"
+                :rules="[ rules.required, rules.email ]"
                 required
               ></v-text-field>
               <v-text-field
@@ -38,7 +38,7 @@
                 label="Password"
                 type="password"
                 v-model="password"
-                :rules="passwordRules"
+                :rules="[ rules.required, rules.length ]"
                 required
               ></v-text-field>
               <v-text-field
@@ -48,7 +48,7 @@
                 label="Confirm Password"
                 type="password"
                 v-model="confirmPassword"
-                :rules="confirmPasswordRules"
+                :rules="[ rules.required, passwordMatch ]"
                 required
               ></v-text-field>
             </v-form>
@@ -74,22 +74,18 @@ export default {
       password: '',
       confirmPassword: '',
       valid: false,
-      emailRules: [
-        v => !!v || 'E-mail is required',
-        v => /.+@.+/.test(v) || 'E-mail must be valid'
-      ],
-      passwordRules: [
-        v => !!v || 'Password is required',
-        v => ((v !== undefined) && (v.length >= 6)) || 'Name must be equal or more than 6 characters'
-      ],
-      confirmPasswordRules: [
-        v => !!v || 'Password is required'
-        // ,
-        // function (v) { return (v !== this.password) || 'Password should match' }
-      ]
+      rules: {
+        required: v => !!v || 'This field is required',
+        email: v => /.+@.+/.test(v) || 'E-mail must be valid',
+        length: v => ((v !== undefined) && (v.length >= 6)) || 'Name must be equal or more than 6 characters'
+      }
     }
   },
   computed: {
+    passwordMatch () {
+      // console.log(this.password)
+      return (this.password === this.confirmPassword) || 'Password must match'
+    },
     ...mapGetters([
       'authStatus',
       'authLoading',
