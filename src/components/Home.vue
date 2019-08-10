@@ -2,7 +2,6 @@
   <v-container>
     <v-layout row>
       <v-flex xs12>
-        <h1>Home</h1>
         <event-list :items="items"></event-list>
       </v-flex>
     </v-layout>

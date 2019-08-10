@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container pa-0 my-3 flat
+    <v-container
       v-for="(date_block, index) in items"
       :key="index"
     >

@@ -9,7 +9,7 @@
             <h5 class="headline" style="display: inline">{{ event.glucose }}</h5> mmol/L
           </v-flex>
           <v-flex xs6>
-            <v-layout align-center justify-end row fill-height>
+            <v-layout justify-end>
               {{ event.entry_time }}
             </v-layout>
           </v-flex>

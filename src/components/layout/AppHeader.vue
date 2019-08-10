@@ -2,57 +2,67 @@
   <!-- Рут элемент -->
   <div>
     <!-- Навигационная вертикальное меню -->
-    <v-navigation-drawer app clipped v-model="showDrawer">
+    <v-navigation-drawer app clipped permanent v-model="showDrawer">
       <!-- Заголовок с клипартом -->
       <v-img :aspect-ratio="2/1" src="/static/navigation-drawer-top.jpg"></v-img>
+      <!-- Разделитель начальный -->
+      <v-divider></v-divider>
       <!-- Опции меню -->
       <v-list subheader>
-        <!-- Разделитель начальный -->
-        <v-divider></v-divider>
         <!-- Пункты меню -->
-        <div v-for="(link, index) in links" v-bind:key="index">
+        <div
+          v-for="(link, index) in links"
+          :key="index"
+        >
           <!-- Разделитель -->
-          <v-divider v-if="link.text === undefined"></v-divider>
+          <v-divider
+            v-if="link.text === undefined"
+          ></v-divider>
           <!-- Пункт меню обычный -->
-          <v-list-tile v-else-if="link.href !== undefined" v-bind:to="link.href">
-            <v-list-tile-action>
-              <v-icon>{{ link.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title v-text="link.text"></v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+          <v-list-item
+            v-else-if="link.href !== undefined"
+            :to="link.href"
+          >
+            <v-icon left>{{ link.icon }}</v-icon>
+            <v-list-item-content>
+              <v-list-item-title v-text="link.text"/>
+            </v-list-item-content>
+          </v-list-item>
           <!-- Меню с выпадением -->
           <v-list-group
             v-else-if="link.sub_links !== undefined"
-            v-bind:prepend-icon="link.icon">
+            :prepend-icon="link.icon"
+            no-action
+            class="shift-icon"
+          >
             <template v-slot:activator>
-              <v-list-tile>
-                <v-list-tile-title>{{ link.text }}</v-list-tile-title>
-              </v-list-tile>
+              <v-list-item-content>
+                <v-list-item-title v-text="link.text"/>
+              </v-list-item-content>
             </template>
-            <v-list-tile
+
+            <v-list-item
               v-for="(sub_link, index) in link.sub_links"
-              v-bind:key="index"
-              v-bind:to="sub_link.href"
-              v-if="isAuthenticated == sub_link.isAuth">
-              <v-list-tile-action>
-                <v-icon right>{{ sub_link.icon }}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title v-text="sub_link.text"></v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+              v-if="isAuthenticated == sub_link.isAuth"
+              :key="index"
+              :to="sub_link.href"
+            >
+              <v-icon left>{{ sub_link.icon }}</v-icon>
+              <v-list-item-content>
+                <v-list-item-title v-text="sub_link.text"/>
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
         </div>
         <!-- Разделитель оконечный -->
         <v-divider></v-divider>
       </v-list>
     </v-navigation-drawer>
+
     <!-- Горизонтальное меню (тулбар) -->
-    <v-toolbar app dense>
+    <v-app-bar app dense>
       <!-- Гамбургер -->
-      <v-toolbar-side-icon v-on:click="showDrawer = !showDrawer"></v-toolbar-side-icon>
+      <v-app-bar-nav-icon @click="showDrawer = !showDrawer"></v-app-bar-nav-icon>
       <!-- Заголовок -->
       <v-toolbar-title>Yet Another Health Diary</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -62,27 +72,29 @@
           v-for="(link, index) in links"
           v-if="link.text !== undefined && link.href !== undefined"
           v-show="!link.fab"
-          flat
+          text
           :key="index"
           :to="link.href"
         >
           <v-icon left>{{ link.icon }}</v-icon>
-            {{ link.text }}
+          {{ link.text }}
         </v-btn>
         <template v-else>
           <v-btn
-            flat
             v-for="(sub_link, sub_index) in link.sub_links"
             v-if="isAuthenticated == sub_link.isAuth"
+            text
             :key="100 + sub_index"
             :to="sub_link.href"
           >
             <v-icon left>{{ sub_link.icon }}</v-icon>
-              {{ sub_link.text }}
+            {{ sub_link.text }}
             </v-btn>
         </template>
       </v-toolbar-items>
-    </v-toolbar>
+    </v-app-bar>
+
+    <!-- Летающие кнопки -->
     <v-btn
       v-for="(link, index) in links"
       v-if="isHomePage && link.fab"
@@ -107,7 +119,7 @@ export default {
   name: 'Navbar',
   data: () => {
     return {
-      showDrawer: true,
+      showDrawer: false,
       links: [
         { text: 'Home', icon: 'home', href: '/' },
         { text: 'User',
@@ -141,6 +153,11 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+div.v-list-group__header__prepend-icon {
+  margin-right: 8px !important;
+}
+.v-application--is-ltr .v-list-group--no-action>.v-list-group__items>div>.v-list-item {
+  padding-left: 16px !important;
+}
 </style>

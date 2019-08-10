@@ -23,22 +23,29 @@
               Wrong e-mail or password
             </span>
           </v-card-text>
-          <v-tabs vertical>
+          <v-tabs vertical fill-height>
             <v-tab>Common</v-tab>
             <v-tab>Insulin</v-tab>
-            <v-tabs-items>
               <!-- Tab Common -->
               <v-tab-item>
                 <v-card flat>
                   <v-card-text>
+                    <v-img
+                      :src="avatarURL"
+                    ></v-img>
                     <v-file-input
                       accept="image/png, image/jpeg, image/bmp"
                       placeholder="Pick an avatar"
                       prepend-icon="mdi-camera"
                       label="Avatar"
-                      :rules="[ fileSize ]"
+                      :rules="[ rules.fileSize ]"
+                      v-model="avatar"
                     ></v-file-input>
                   </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="error" @click="onUploadAvatar">Upload</v-btn>
+                  </v-card-actions>
                   <v-card-text>
                     <v-form ref="form" v-model="valid" lazy-validation>
                       <v-text-field
@@ -71,7 +78,6 @@
               </v-tab-item>
               <!-- Tab Insulin -->
               <v-tab-item>2</v-tab-item>
-            </v-tabs-items>
           </v-tabs>
 <!--
           <v-card-actions>
@@ -87,6 +93,7 @@
 
 <script>
 import * as user from '@/components/user/user'
+import HTTP, { API_URL } from '@/axios'
 export default {
   name: 'Settings',
   data: () => {
@@ -97,10 +104,35 @@ export default {
       isValid: true,
       rules: {
         fileSize: value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!'
-      }
+      },
+      avatar: null,
+      avatarURL: ''
     }
   },
   methods: {
+    onUploadAvatar () {
+      let file = this.avatar
+      let reader = new FileReader()
+      let settings = this
+      console.log(file)
+      reader.readAsDataURL(file)
+      reader.onload = function () {
+        console.log(settings)
+        settings.avatarURL = reader.result
+        const HTTPRequest = {
+          url: API_URL + 'avatar/upload',
+          data: reader.result,
+          method: 'POST'
+        }
+        HTTP(HTTPRequest).then(() => {
+          console.log('+')
+        })
+        // console.log(reader.result)
+      }
+      reader.onerror = function () {
+        console.log('-')
+      }
+    },
     onClose: () => {
     },
     changePassword () {
