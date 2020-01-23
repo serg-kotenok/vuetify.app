@@ -79,7 +79,7 @@ export const actions = {
 }
 
 // basic mutations, showing loading, success, error to reflect the api call status and the token when loaded
-export const mutations = {
+export const зmutations = {
   [ REG_REQUEST ]: (state) => {
     state.status = STATUS_LOADING
     delete state.reason

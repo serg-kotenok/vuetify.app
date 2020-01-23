@@ -2,7 +2,7 @@
   <!-- Рут элемент -->
   <div>
     <!-- Навигационная вертикальное меню -->
-    <v-navigation-drawer app clipped permanent v-model="showDrawer">
+    <v-navigation-drawer app clipped v-model="showDrawer">
       <!-- Заголовок с клипартом -->
       <v-img :aspect-ratio="2/1" src="/static/navigation-drawer-top.jpg"></v-img>
       <!-- Разделитель начальный -->

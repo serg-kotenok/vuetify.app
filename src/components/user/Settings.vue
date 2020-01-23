@@ -23,15 +23,15 @@
               Wrong e-mail or password
             </span>
           </v-card-text>
-          <v-tabs vertical fill-height>
+          <v-tabs vertical>
             <v-tab>Common</v-tab>
             <v-tab>Insulin</v-tab>
               <!-- Tab Common -->
               <v-tab-item>
-                <v-card flat>
+                <v-card flat fluid>
                   <v-card-text>
                     <v-img
-                      :src="avatarURL"
+                      :src="avatarURL" aspect-ratio="1" contain min-height="50%"
                     ></v-img>
                     <v-file-input
                       accept="image/png, image/jpeg, image/bmp"
@@ -120,12 +120,14 @@ export default {
         console.log(settings)
         settings.avatarURL = reader.result
         const HTTPRequest = {
-          url: API_URL + 'avatar/upload',
+          url: API_URL + 'user/avatar/upload',
           data: reader.result,
           method: 'POST'
         }
         HTTP(HTTPRequest).then(() => {
           console.log('+')
+        }).catch((e) => {
+          console.log(e)
         })
         // console.log(reader.result)
       }

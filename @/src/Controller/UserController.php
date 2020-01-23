@@ -122,10 +122,119 @@ class UserController extends AbstractController
 
     }
 
-    /**
-     * @Route("/user/is_auth", name="is_user_auth", methods={ "POST" })
-     */
-    public function is_user_auth() {
+    protected function isUserAuth(Request $request) {
+//        $headers = $request->headers->all();
+//        $this->dump($headers, 'HEADERS');
+        $auth = $request->headers->get('authorization');
+//        return $this->flushJson(JsonResponse::HTTP_OK, 'jwt=' . print_r($auth, 1));
+//        $this->dump($auth, 'AUTH');
+  //      die;
+        list($jwt) = sscanf($auth, 'Bearer %s');
+           //     $user_json = JWT::decode($jwt, self::APP_SECRET, [ 'HS256' ]));
+        if ($jwt) {
+            try {
+//                $user_json = JWT::decode($jwt);
+//                $this->dump($jwt);
+                $jwtUser = JWT::decode($jwt, self::APP_SECRET, [ 'HS256' ]);
+//                $this->dump($jwtUser);
+//                return $this->flushJson(JsonResponse::HTTP_OK, 'jwt=' . print_r($user_json, 1));
+//                return $this->flushJson(JsonResponse::HTTP_OK, 'jwt=5555' . $jwt);
+                $repository = $this->getDoctrine()->getRepository(User::class);
+//                return $jwtUser->login;
+                if (($user = $repository->findOneBy([ 'login' => $jwtUser->login ])) !== null)
+                {
+                    return $user;
+                }
+            } catch (\Exception $e) {
+//                return $this->flushJson(JsonResponse::HTTP_OK, 'jwt=' . $e->getMessage());
+                // Some error
+            }
+        }
+//        return $this->flushJson(JsonResponse::HTTP_OK, 'jwt=455465');
+        return false;
+    }
 
+    protected function buildJWTToken(User $user) {
+        $usr = new \stdClass();
+
+        $usr->login = $user->getLogin();
+        $usr->settings = $user->getSettings();
+
+        $token = JWT::encode($usr, self::APP_SECRET);
+
+        return $token;
+    }
+
+    public const USER_API_RESULT_NO_ERROR = 'ok';
+
+    protected function flushJson($http_code, $api_result = self::USER_API_RESULT_NO_ERROR, $user = null) {
+        switch ($http_code) {
+            case JsonResponse::HTTP_UNAUTHORIZED: {
+                $json = [ 'status' => 'unauthorized' ]; // opStatus
+                break;
+            }
+            case JsonResponse::HTTP_OK: {
+                $json = [ 'status' => $api_result ];
+                if ($user !== null) {
+                    $token = $this->buildJWTToken($user);
+                    $json['token'] = $token;
+                }
+                break;
+            }
+            default: {
+                throw new \Exception();
+            }
+        }
+        //$this->dump($json);
+        $response = new JsonResponse($json, $http_code, [
+            'Access-Control-Allow-Origin' => '*',
+            'Content-Type' => ($http_code != JsonResponse::HTTP_OK) ?
+                                'application/problem+json; charset=UTF-8' :
+                                'application/json; charset=UTF-8',
+            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Max-Age' => '3600',
+            'Access-Control-Allow-Headers' => 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With',
+        ]);
+        return $response;
+    }
+
+    public function dump($var, $str='')
+    {
+        ob_start();
+        var_dump($var);
+        $log = ob_get_clean();
+        file_put_contents('debug.log', $str . ' ' . $log . PHP_EOL, FILE_APPEND);
+    }
+
+    /**
+     * @Route("/user/avatar/upload", name="upload_avatar", methods={ "POST" })
+     */
+    public function uploadAvatar(Request $request) {
+//        $request = $this->getRequest();
+//        $user = $this->isUserAuth($request);
+//        $this->dump($user);
+        if (($user = $this->isUserAuth($request)) != false) {
+            //return $user;
+            $this->dump($user, 'user = ');
+//            return $this->flushJson(JsonResponse::HTTP_OK, print_r($user->getLogin(), 1));
+            $payload = $request->getContent();
+            if ($payload)
+            {
+//                return $this->flushJson(JsonResponse::HTTP_OK, 'fgrt=' . $payload);
+//                return $this->flushJson(JsonResponse::HTTP_OK, $request->getContent());
+//                var_dump($payload);
+                $user->setAvatar($payload);
+//                return $this->flushJson(JsonResponse::HTTP_OK, $payload);
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($user);
+                try {
+                    $entityManager->flush();
+                    return $this->flushJson(JsonResponse::HTTP_OK, 'ok', $user);
+                } catch (Doctrine\ORM\ORMException $e) {
+                    return $this->flushJson(JsonResponse::HTTP_OK, 'exception: ' . $e->getMessage());
+                }
+            }
+        }
+        return $this->flushJson(JsonResponse::HTTP_UNAUTHORIZED);
     }
 }

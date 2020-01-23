@@ -72,4 +72,15 @@ class User
         return $this;
     }
 
+    public function setAvatar($avatar)
+    {
+        $settings = $this->getSettings();
+        $settings_assoc = ($settings !== '') ? unserialize(base64_decode($settings)) : [];
+        $settings_assoc['avatar'] = $avatar;
+        $coded_settings = base64_encode(serialize($settings_assoc));
+        $this->setSettings($coded_settings);
+
+        return $this;
+    }
+
 }
