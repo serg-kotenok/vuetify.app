@@ -79,7 +79,7 @@ export const actions = {
 }
 
 // basic mutations, showing loading, success, error to reflect the api call status and the token when loaded
-export const зmutations = {
+export const mutations = {
   [ REG_REQUEST ]: (state) => {
     state.status = STATUS_LOADING
     delete state.reason
@@ -110,7 +110,7 @@ export const зmutations = {
 }
 
 export class User {
-  constructor ({ login, settings }) {
+  constructor ({login, settings}) {
     this.login = login
     this.settings = settings
   }

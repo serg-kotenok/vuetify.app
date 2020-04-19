@@ -9,5 +9,8 @@ actor_suffix: Tester
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
+bootstrap: _bootstrap.php
 params:
     - .env
+settings:
+    colors: true

@@ -32,6 +32,21 @@
     "codeception/lib-asserts": {
         "version": "1.10.1"
     },
+    "codeception/lib-innerbrowser": {
+        "version": "1.2.3"
+    },
+    "codeception/module-asserts": {
+        "version": "1.1.1"
+    },
+    "codeception/module-doctrine2": {
+        "version": "1.0.1"
+    },
+    "codeception/module-phpbrowser": {
+        "version": "1.0.0"
+    },
+    "codeception/module-symfony": {
+        "version": "1.0.0"
+    },
     "codeception/phpunit-wrapper": {
         "version": "8.1.1"
     },
@@ -119,6 +134,12 @@
     },
     "firebase/php-jwt": {
         "version": "v5.0.0"
+    },
+    "guzzlehttp/guzzle": {
+        "version": "6.5.2"
+    },
+    "guzzlehttp/promises": {
+        "version": "v1.3.1"
     },
     "guzzlehttp/psr7": {
         "version": "1.6.1"
