@@ -1,0 +1,12 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+user_register:
+  path: /user/reg
+  controller: App\Controller\UserController::register
+user_auth:
+  path: /user/auth
+  controller: App\Controller\UserController::authenticate
+upload_avatar:
+  path: /user/avatar/upload
+  controller: App\Controller\UserController::uploadAvatar

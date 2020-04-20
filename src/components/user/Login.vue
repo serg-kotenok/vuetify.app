@@ -4,35 +4,48 @@
       <v-flex xs12 sm8 md6>
         <v-card class="elevation-15">
           <v-toolbar dark color="primary">
-            <v-toolbar-title>Login form</v-toolbar-title>
+            <v-toolbar-title>Login Form</v-toolbar-title>
           </v-toolbar>
+          <v-progress-linear
+            class="ma-0"
+            indeterminate
+            v-if="authLoading"
+          />
+          <v-card-text
+            class="error"
+            v-if="authError"
+          >
+            <v-icon>info</v-icon>
+            <span class="shift">
+              Wrong e-mail or password
+            </span>
+          </v-card-text>
           <v-card-text>
-            <v-form ref="form" v-model="valid" lazy-validation>
+            <v-form ref="form" v-model="valid">
               <v-text-field
+                required
                 prepend-icon="person"
                 name="email"
-                label="Email"
+                label="E-mail"
                 type="email"
-                :v-model="email"
+                v-model="email"
                 :rules="emailRules"
-                required
               ></v-text-field>
               <v-text-field
+                required
                 id="password"
                 prepend-icon="lock"
                 name="password"
                 label="Password"
                 type="password"
-                :v-model="password"
+                v-model="password"
                 :rules="passwordRules"
-                :counter="6"
-                requered
               ></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" v-on:click="onSubmit" :disabled="valid == false">Login</v-btn>
+            <v-btn color="primary" v-on:click="onSubmit" :disabled="!valid">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -41,6 +54,8 @@
 </template>
 
 <script>
+import * as auth from './auth'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Login',
   data: () => {
@@ -48,24 +63,38 @@ export default {
       email: '',
       password: '',
       valid: false,
+      loading: false,
+      error: false,
       emailRules: [
         v => !!v || 'E-mail is required',
         v => /.+@.+/.test(v) || 'E-mail must be valid'
       ],
       passwordRules: [
         v => !!v || 'Password is required',
-        v => v.length >= 6 || 'Name must be equal or more than 6 characters'
+        v => ((v !== undefined) && (v.length >= 6)) || 'Name must be equal or more than 6 characters'
       ]
     }
+  },
+  computed: {
+    ...mapGetters([
+      'authStatus',
+      'authLoading',
+      'authError'
+    ])
   },
   methods: {
     onSubmit () {
       if (this.$refs.form.validate()) {
+        /*
         const user = {
           email: this.email,
           password: this.password
         }
-        console.log('Login')
+        */
+        const { email, password } = this
+        this.$store.dispatch(auth.AUTH_REQUEST, { email, password }).then(() => {
+          this.$router.push('/')
+        })
       }
     }
   }
@@ -73,5 +102,7 @@ export default {
 </script>
 
 <style scoped>
-
+.shift {
+  vertical-align: 3px;
+}
 </style>
