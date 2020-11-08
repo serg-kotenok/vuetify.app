@@ -1,58 +1,136 @@
 import JwtDecode from 'jwt-decode'
 import axios from 'axios'
+import User from '@/models/user'
+// eslint-disable-next-line camelcase
+import * as mutation_types from '@/store/mutation_types'
 
-export const REG_REQUEST = 'REG_REQUEST'
-
-export const AUTH_REQUEST = 'AUTH_REQUEST'
-export const LOGOUT = 'LOGOUT'
-
-export const USER_SUCCESS = 'USER_SUCCESS'
-export const USER_ERROR = 'AUTH_ERROR'
-
-export const STATUS_NO_USER = 'user.anon'
-export const STATUS_USER = 'user.auth'
-export const STATUS_LOADING = 'user.loading'
-export const STATUS_ERROR = 'user.error'
-
-const USER_API = {
-  url: 'https://127.0.0.1:8000/user/',
-  method: 'POST'
-}
-
-class User {
-  constructor ({ login, settings }) {
-    this.login = login
-    this.settings = settings
-  }
-
-  static from (token) {
-    try {
-      let obj = JwtDecode(token)
-      if (obj != null) {
-        return new User(obj)
-      }
-    } catch (_) {
-    }
-    return null
-  }
-}
-
-//const user = User.from(localStorage.getItem('user-token'))
-
-export const state = {
+const state = {
   user: User.from(localStorage.getItem('user-token')),
-  status: STATUS_NO_USER
+  isLoading: false,
+  errorMsg: ''
 }
 
-export const getters = {
+const getters = {
   getUser: (state) => state.user,
-  isAuthenticated: (state) => (state.user !== null),
-// return !!state.token
-  authStatus: (state) => state.status,
-  authLoading: (state) => state.status === STATUS_LOADING,
-  authError: (state) => state.status === STATUS_ERROR
+  isAuthenticated: (state) => !!state.user,
+  isLoading: (state) => state.loading,
+  isError: (state) => !!state.errorMsg
 }
 
+export const mutations = {
+  [ mutation_types.USER_LOADING ]: (state, isLoading) => {
+    state.errorMsg = ''
+    state.isLoading = isLoading
+  },
+  [ mutation_types.USER_SUCCESS ]: (state, token) => {
+    localStorage.setItem('user-token', token)
+    axios.defaults.headers.common['Authorization'] = 'Barear' + ' ' + token
+    this.USER_LOADING(state, false)
+    state.user = User.from(token)
+  },
+  [ mutation_types.USER_ERROR ]: (state, errorMsg) => {
+    localStorage.removeItem('user-token')
+    delete axios.defaults.headers.common['Authorization']
+    this.USER_LOADING(state, false)
+    state.errorMsg = errorMsg
+  },
+  [ mutation_types.USER_LOGOUT ]: (state) => {
+    localStorage.removeItem('user-token')
+    state.user = null
+    delete axios.defaults.headers.common['Authorization']
+  }
+}
+
+export const actions = {
+  register: ({commit}, user) => {
+    return new Promise((resolve, reject) => {
+      commit(mutation_types.USER_LOADING, true)
+      axios({
+        url: axios.defaults.baseURL + '/user/reg',
+        data: user,
+        method: 'POST'
+      }).then((response) => {
+        const data = response.data
+        if (data.status === 'ok' && data.token !== '') {
+          if (JwtDecode(data.token)) {
+            commit(mutation_types.USER_SUCCESS, data.token)
+            resolve(response)
+          }
+        }
+      }).catch((error) => {
+        commit(mutation_types.USER_ERROR, error)
+        reject(error)
+      })
+    })
+  },
+  login: ({commit}, user) => {
+    return new Promise((resolve, reject) => {
+      commit(mutation_types.USER_LOADING, true)
+      axios({
+        url: axios.defaults.baseURL + '/user/auth',
+        data: user,
+        method: 'POST'
+      }).then((response) => {
+        const data = response.data
+        if (data.status === 'ok' && data.token !== '') {
+          if (JwtDecode(data.token)) {
+            commit(mutation_types.USER_SUCCESS, data.token)
+            resolve(response)
+          }
+        }
+      }).catch((error) => {
+        commit(mutation_types.USER_ERROR, error)
+        reject(error)
+      })
+    })
+  },
+  logout: ({commit}) => {
+    return new Promise((resolve, reject) => {
+      commit(mutation_types.USER_LOGOUT)
+      resolve()
+    })
+  }
+/*
+    [ AUTH_REQUEST ]: ({ commit, dispatch }, user) => {
+      return new Promise((resolve, reject) => { // The Promise used for router redirect in login
+        const request = {
+          url: USER_API.url + 'auth',
+          data: user,
+          method: USER_API.method
+        }
+
+        commit(AUTH_REQUEST)
+        axios(request).then(response => {
+          const data = response.data
+          if (data.status === 'ok' && data.token !== '') {
+            if (JwtDecode(data.token)) {
+              commit(USER_SUCCESS, data.token)
+              resolve(response)
+            }
+          }
+          // commit(USER_ERROR, data.status)
+          // reject(response)
+        }).catch(err => {
+          commit(USER_ERROR, 'API server malfunction')
+          reject(err)
+        })
+      })
+    },
+    [ LOGOUT ]: ({commit, dispatch}) => {
+    return new Promise((resolve, reject) => {
+      commit(LOGOUT)
+      resolve()
+    })
+  }
+  */
+}
+
+export default {
+  state,
+  getters,
+  mutations,
+  actions
+}
 
 /*
 export const actions = {
@@ -145,4 +223,3 @@ export const mutations = {
   }
 }
 */
-

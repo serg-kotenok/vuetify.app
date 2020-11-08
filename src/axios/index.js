@@ -1,5 +1,7 @@
 import axios from 'axios'
+
 export const API_URL = process.env.API_URL || 'https://127.0.0.1:8000/'
+
 export default axios.create({
   baseURL: API_URL,
   headers: {

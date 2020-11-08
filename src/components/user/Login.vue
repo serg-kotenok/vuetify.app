@@ -85,14 +85,13 @@ export default {
   methods: {
     onSubmit () {
       if (this.$refs.form.validate()) {
-        /*
         const user = {
           email: this.email,
           password: this.password
         }
-        */
-        const { email, password } = this
-        this.$store.dispatch(auth.AUTH_REQUEST, { email, password }).then(() => {
+        // const { email, password } = this
+        // this.$store.dispatch(auth.AUTH_REQUEST, { email, password }).then(() => {
+        this.$store.dispatch(auth.AUTH_REQUEST, user).then(() => {
           this.$router.push('/')
         })
       }
@@ -100,7 +99,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .shift {
   vertical-align: 3px;
