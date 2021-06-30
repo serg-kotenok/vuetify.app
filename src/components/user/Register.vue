@@ -35,7 +35,8 @@
                 id="password"
                 prepend-icon="lock"
                 name="password"
-                label="Password"
+                label
+                import ="Password"
                 type="password"
                 v-model="password"
                 :rules="[ rules.required, rules.length ]"

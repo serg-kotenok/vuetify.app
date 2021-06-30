@@ -26,6 +26,7 @@ const ifAuthenticated = (to, from, next) => {
   }
   next('/login')
 }
+
 export default new Router({
   mode: 'history',
   routes: [
